@@ -5,19 +5,28 @@ options=("Pregled svih računa na računalu" "Kreiranje računa" "Ažuriranje ra
 # Select Menu
 echo "Skripta za provođenje CRUD operacija nad jednim ili više korisničkih računa"
 echo ""
-PS3="Odaberite broj računa:"
+PS3="Odaberite opciju:"
 
-select opcija in Jedan Višestruko
-do
-    case $opcija in
-        Jedan)
-            select podopcija in "${options[@]}"
-            do
-                case $podopcija in
-                    
-                esac
-            done
-    esac
+while true; do
+    select opcija in Jedan Višestruko Kraj
+    do
+        case $opcija in
+            Jedan)
+                select podopcija in "${options[@]}"
+                do
+                    case $podopcija in
+                        "Pregled svih računa na računalu")
+                            echo "uspjeh"
+                            break 2
+                            ;;
+                    esac
+                done
+            ;;
+            *)
+                echo "kraj"
+                break 2
+        esac
+    done
 done
 
 
