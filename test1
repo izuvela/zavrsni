@@ -1,6 +1,10 @@
 #!/bin/bash
 
-#TODO provjeriti je li korisnik admin
+# provjeriti je li korisnik admin
+if [[ $(/usr/bin/id -u) -ne 0 ]]; then
+    echo "Skriptu morate pokrenuti kao admin!"
+    exit
+fi
 
 sviRacuni () {
     # less /etc/passwd | cut -d: -f1
