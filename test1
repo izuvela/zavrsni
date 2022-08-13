@@ -1,0 +1,27 @@
+#!/bin/bash
+
+options=("Pregled svih računa na računalu" "Kreiranje računa" "Ažuriranje računa" "Brisanje računa")
+
+# Select Menu
+echo "Skripta za provođenje CRUD operacija nad jednim ili više korisničkih računa"
+echo ""
+PS3="Odaberite broj računa:"
+
+select opcija in Jedan Višestruko
+do
+    case $opcija in
+        Jedan)
+            select podopcija in "${options[@]}"
+            do
+                case $podopcija in
+                    
+                esac
+            done
+    esac
+done
+
+
+
+# Giving a JSON file to the script and displaying the first object
+#json="$1"
+#cat $json | jq '.users[0]'
