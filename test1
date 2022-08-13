@@ -1,5 +1,22 @@
 #!/bin/bash
 
+#TODO provjeriti je li korisnik admin
+
+sviRacuni () {
+    # less /etc/passwd | cut -d: -f1
+    cut -d: -f1,3 /etc/passwd | egrep ':[0-9]{4}$' | cut -d: -f1
+}
+
+azuriranjeImena () {
+    #TODO provjeriti je li takvo ime postoji, ako da dobro, ako ne, greska
+    echo "Give me the old username"
+    read name
+    echo "Give me the new username"
+    read new
+    usermod -l "$new" "$name"
+    #TODO s obzirom je li prosla naredba ispisi poruku
+}
+
 options=("Pregled svih računa na računalu" "Kreiranje računa" "Ažuriranje računa" "Brisanje računa")
 
 # Select Menu
@@ -8,23 +25,41 @@ echo ""
 PS3="Odaberite opciju:"
 
 while true; do
+    echo "----------------"
     select opcija in Jedan Višestruko Kraj
     do
         case $opcija in
             Jedan)
-                select podopcija in "${options[@]}"
-                do
-                    case $podopcija in
-                        "Pregled svih računa na računalu")
-                            echo "uspjeh"
-                            break 2
+                while true; do
+                    select podopcija in "${options[@]}"
+                    do
+                        case $podopcija in
+                            "Pregled svih računa na računalu")
+                                sviRacuni
+                                break 3
+                                ;;
+                            "Kreiranje računa")
+                                echo "uspjeh"
+                                break 
                             ;;
-                    esac
+                            "Ažuriranje računa")
+                                echo "uspjeh"
+                                break 
+                            ;;
+                            *)
+                                echo "Kriva naredba! Ponovite"
+                                break 
+                        esac
+                    done
                 done
             ;;
-            *)
+            Kraj)
                 echo "kraj"
                 break 2
+            ;;
+            *)
+                echo "Kriva naredba! Ponovite"
+                break 
         esac
     done
 done
