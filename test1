@@ -6,6 +6,31 @@ if [[ $(/usr/bin/id -u) -ne 0 ]]; then
     exit
 fi
 
+kreiranjeKorisnika() {
+    echo "Upišite novo korisničko ime: "
+    read newUsername
+    useradd -m "$newUsername"
+    passwd "$newUsername"
+    if [ $? -eq 0 ]; then
+        echo "Uspješno kreirano!"
+    else
+        echo "Greška. Pokušajte ponovno."
+        exit
+    fi
+}
+
+brisanjeKorisnika() {
+    echo "Upišite račun koji želite obrisati: "
+    read oldUsername
+    userdel -r "$oldUsername"
+    if [ $? -eq 0 ]; then
+        echo "Uspješno izbrisano!"
+    else
+        echo "Greška. Ako dobijete error: 'user <oldname> is currently used by process <processno>' morate zaustaviti taj proces sa naredbom: kill <processno>. Nakon toga možete izbrisati korisničko ime."
+        exit
+    fi
+}
+
 sviRacuni() {
     # less /etc/passwd | cut -d: -f1
     cut -d: -f1,3 /etc/passwd | egrep ':[0-9]{4}$' | cut -d: -f1
@@ -13,12 +38,18 @@ sviRacuni() {
 
 azuriranjeImena() {
     #TODO provjeriti je li takvo ime postoji, ako da dobro, ako ne, greska
-    echo "Give me the old username"
+    echo "Upiši staro korisničko ime"
     read name
-    echo "Give me the new username"
+    echo "Upiši novo korisničko ime"
     read new
     usermod -l "$new" "$name"
     usermod -d /home/"$new" -m "$new"
+    if [ $? -eq 0 ]; then
+        echo "Uspješno ažurirano!"
+    else
+        echo "Greška. Ako dobijete error: 'user <oldname> is currently used by process <processno>' morate zaustaviti taj proces sa naredbom: kill <processno>. Nakon toga možete promijeniti korisničko ime."
+        exit
+    fi
     #TODO s obzirom je li prosla naredba ispisi poruku
 }
 
@@ -35,6 +66,7 @@ while true; do
         case $opcija in
         Jedan)
             while true; do
+                echo "----------------"
                 select podopcija in "${options[@]}"; do
                     case $podopcija in
                     "Pregled svih računa na računalu")
@@ -42,12 +74,15 @@ while true; do
                         break 3
                         ;;
                     "Kreiranje računa")
-                        echo "uspjeh"
+                        kreiranjeKorisnika
                         break
                         ;;
                     "Ažuriranje računa")
                         azuriranjeImena
-                        echo "uspjeh"
+                        break
+                        ;;
+                    "Brisanje računa")
+                        brisanjeKorisnika
                         break
                         ;;
                     *)
