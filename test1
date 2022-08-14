@@ -7,6 +7,7 @@ if [[ $(/usr/bin/id -u) -ne 0 ]]; then
 fi
 
 kreiranjeKorisnika() {
+    #TODO provjeriti je li ime vec postoji
     echo "Upišite novo korisničko ime: "
     read newUsername
     useradd -m "$newUsername"
@@ -20,6 +21,7 @@ kreiranjeKorisnika() {
 }
 
 brisanjeKorisnika() {
+    #TODO provjeriti je li ime postoji
     echo "Upišite račun koji želite obrisati: "
     read oldUsername
     userdel -r "$oldUsername"
@@ -33,6 +35,7 @@ brisanjeKorisnika() {
 
 sviRacuni() {
     # less /etc/passwd | cut -d: -f1
+    echo "----------------"
     cut -d: -f1,3 /etc/passwd | egrep ':[0-9]{4}$' | cut -d: -f1
 }
 
@@ -50,10 +53,41 @@ azuriranjeImena() {
         echo "Greška. Ako dobijete error: 'user <oldname> is currently used by process <processno>' morate zaustaviti taj proces sa naredbom: kill <processno>. Nakon toga možete promijeniti korisničko ime."
         exit
     fi
-    #TODO s obzirom je li prosla naredba ispisi poruku
 }
 
-options=("Pregled svih računa na računalu" "Kreiranje računa" "Ažuriranje računa" "Brisanje računa")
+azuriranjeLozinke() {
+    echo "Upišite korisničko ime:"
+    read korisnickoIme
+    passwd "$korisnickoIme"
+    if [ $? -eq 0 ]; then
+        echo "Uspješno ažurirano!"
+    else
+        echo "Greška. Ako dobijete error: 'user <oldname> is currently used by process <processno>' morate zaustaviti taj proces sa naredbom: kill <processno>. Nakon toga možete promijeniti korisničko ime."
+        exit
+    fi
+}
+
+options=("Pregled svih računa na računalu" "Kreiranje računa" "Ažuriranje računa" "Brisanje računa" "Kraj")
+
+izborAzuriranja() {
+    select izbor in Ime Lozinka; do
+        case $izbor in
+        Ime)
+            azuriranjeImena
+            break
+            ;;
+        Lozinka)
+            azuriranjeLozinke
+            break
+            ;;
+
+        *)
+            echo "Kriva naredba! Ponovite"
+            break
+            ;;
+        esac
+    done
+}
 
 # Select Menu
 echo "Skripta za provođenje CRUD operacija nad jednim ili više korisničkih računa"
@@ -78,12 +112,15 @@ while true; do
                         break
                         ;;
                     "Ažuriranje računa")
-                        azuriranjeImena
+                        izborAzuriranja
                         break
                         ;;
                     "Brisanje računa")
                         brisanjeKorisnika
                         break
+                        ;;
+                    "Kraj")
+                        exit
                         ;;
                     *)
                         echo "Kriva naredba! Ponovite"
@@ -94,7 +131,6 @@ while true; do
             done
             ;;
         Kraj)
-            echo "kraj"
             break 2
             ;;
         *)
