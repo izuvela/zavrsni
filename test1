@@ -11,6 +11,12 @@ kreiranjeKorisnika() {
     echo "Upišite novo korisničko ime: "
     read newUsername
     useradd -m "$newUsername"
+    if [ $? -eq 0 ]; then
+        echo "Uspješno kreirano ime!"
+    else
+        echo "Greška. Pokušajte ponovno."
+        exit
+    fi
     passwd "$newUsername"
     if [ $? -eq 0 ]; then
         echo "Uspješno kreirano!"
@@ -28,7 +34,8 @@ brisanjeKorisnika() {
     if [ $? -eq 0 ]; then
         echo "Uspješno izbrisano!"
     else
-        echo "Greška. Ako dobijete error: 'user <oldname> is currently used by process <processno>' morate zaustaviti taj proces sa naredbom: kill <processno>. Nakon toga možete izbrisati korisničko ime."
+        echo "Greška. Ako dobijete error: 'user <oldname> is currently used by process <processno>' morate zaustaviti taj proces sa naredbom: kill <processno>."
+        echo "Ako želite izbrisati trenutno korištenog korisnika, morate se prijaviti na drugi račun te sa njega obrisati željeni račun."
         exit
     fi
 }
@@ -50,7 +57,8 @@ azuriranjeImena() {
     if [ $? -eq 0 ]; then
         echo "Uspješno ažurirano!"
     else
-        echo "Greška. Ako dobijete error: 'user <oldname> is currently used by process <processno>' morate zaustaviti taj proces sa naredbom: kill <processno>. Nakon toga možete promijeniti korisničko ime."
+        echo "Greška. Ako dobijete error: 'user <oldname> is currently used by process <processno>' morate zaustaviti taj proces sa naredbom: kill <processno>."
+        echo "Ako želite promijeniti ime ili lozinku trenutno korištenog korisnika, morate se prijaviti na drugi račun te sa njega ažurirati željeni račun."
         exit
     fi
 }
@@ -62,7 +70,8 @@ azuriranjeLozinke() {
     if [ $? -eq 0 ]; then
         echo "Uspješno ažurirano!"
     else
-        echo "Greška. Ako dobijete error: 'user <oldname> is currently used by process <processno>' morate zaustaviti taj proces sa naredbom: kill <processno>. Nakon toga možete promijeniti korisničko ime."
+        echo "Greška. Ako dobijete error: 'user <oldname> is currently used by process <processno>' morate zaustaviti taj proces sa naredbom: kill <processno>."
+        echo "Ako želite promijeniti ime ili lozinku trenutno korištenog korisnika, morate se prijaviti na drugi račun te sa njega ažurirati željeni račun."
         exit
     fi
 }
