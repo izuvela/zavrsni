@@ -76,7 +76,9 @@ azuriranjeLozinke() {
     fi
 }
 
-options=("Pregled svih računa na računalu" "Kreiranje računa" "Ažuriranje računa" "Brisanje računa" "Kraj")
+opcijeJedan=("Pregled svih računa na računalu" "Kreiranje računa" "Ažuriranje računa" "Brisanje računa" "Kraj")
+opcijeVise=("Ispis računa" "Odabir JSON-a")
+#TODO napisati opcije za vise opcijeViše
 
 izborAzuriranja() {
     select izbor in Ime Lozinka; do
@@ -110,7 +112,7 @@ while true; do
         Jedan)
             while true; do
                 echo "----------------"
-                select podopcija in "${options[@]}"; do
+                select podopcija in "${opcijeJedan[@]}"; do
                     case $podopcija in
                     "Pregled svih računa na računalu")
                         sviRacuni
@@ -139,6 +141,31 @@ while true; do
                 done
             done
             ;;
+        Višestruko)
+            while true; do
+                echo "----------------"
+                select podopcija in "${opcijeVise[@]}"; do
+                    case $podopcija in
+                    "Ispis računa")
+                        json="$1"
+                        cat $json | jq '.users[0]'
+                        break 3
+                        ;;
+                    "Odabir JSON-a")
+                        file=$(zenity --file-selection --title="Odaberite .json datoteku" --file-filter="*.json" 2>/dev/null)
+                        cat $file | jq '.users[0]'
+                        ;;
+                    "Kraj")
+                        exit
+                        ;;
+                    *)
+                        echo "Kriva naredba! Ponovite"
+                        break
+                        ;;
+                    esac
+                done
+            done
+            ;;
         Kraj)
             break 2
             ;;
@@ -153,3 +180,5 @@ done
 # Giving a JSON file to the script and displaying the first object
 #json="$1"
 #cat $json | jq '.users[0]'
+
+#using zenity for file selection
