@@ -8,7 +8,7 @@ TITLE="Title here"
 MENU="Choose one of the following options:"
 
 OPTIONS=(1 "Option 1" 2 "Option 2"
-3 "Option 3")
+    3 "Option 3")
 OPTIONS2=(4 "Option 4")
 
 CHOICE=$(dialog --clear \
@@ -17,7 +17,7 @@ CHOICE=$(dialog --clear \
     --menu "$MENU" \
     $HEIGHT $WIDTH $CHOICE_HEIGHT \
     "${OPTIONS[@]}" \
-2>&1 >/dev/tty) # saznati sto ovo znaci
+    2>&1 >/dev/tty)
 
 CHOICE2=$(dialog --clear \
     --backtitle "$BACKTITLE" \
@@ -25,21 +25,21 @@ CHOICE2=$(dialog --clear \
     --menu "$MENU" \
     $HEIGHT $WIDTH $CHOICE_HEIGHT \
     "${OPTIONS2[@]}" \
-2>&1 >/dev/tty)
+    2>&1 >/dev/tty)
 
 clear
 case $CHOICE in
-    1)
-        case $CHOICE2 in
-            4)
-                echo "You chose Option 4"
-            ;;
-        esac
+1)
+    case $CHOICE2 in
+    4)
+        echo "You chose Option 4"
+        ;;
+    esac
     ;;
-    2)
-        echo "You chose Option 2"
+2)
+    echo "You chose Option 2"
     ;;
-    3)
-        echo "You chose Option 3"
+3)
+    echo "You chose Option 3"
     ;;
 esac

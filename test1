@@ -77,7 +77,7 @@ azuriranjeLozinke() {
 }
 
 opcijeJedan=("Pregled svih računa na računalu" "Kreiranje računa" "Ažuriranje računa" "Brisanje računa" "Kraj")
-opcijeVise=("Ispis računa" "Odabir JSON-a" "Kraj")
+opcijeVise=("Ispis računa" "Odabir JSON-a" "Ispis sadržaja JSON-a" "Kraj")
 #TODO napisati opcije za vise opcijeViše
 
 izborAzuriranja() {
@@ -162,9 +162,24 @@ while true; do
                         sadrzaj=$(cat $datoteka | jq '.users')
                         if [ "$sadrzaj" = null ]; then
                             echo "Neispravni JSON! Pokušajte ponovno."
+                            echo "Primjer ispravnog formata:"
+                            echo "{"
+                            echo "  "users": ["
+                            echo "      {"
+                            echo "         "username": "...","
+                            echo "         "password": "...""
+                            echo "      },"
+                            echo "        ..."
+                            echo "   ]"
+                            echo "}"
+
                         else
                             echo "$sadrzaj"
                         fi
+                        break
+                        ;;
+                    "Ispis sadržaja JSON-a")
+                        echo "$sadrzaj"
                         break
                         ;;
                     "Kraj")
