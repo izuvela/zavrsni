@@ -78,7 +78,8 @@ azuriranjeLozinke() {
 }
 
 opcijeJedan=("Pregled svih računa na računalu" "Kreiranje računa" "Ažuriranje računa" "Brisanje računa" "Natrag")
-opcijeVise=("Ispis računa" "Odabir JSON-a" "Ispis sadržaja JSON-a" "Natrag")
+opcijeVise=("Odabir JSON-a" "Kreiranje korisnika iz JSON-a" "Brisanje korisnika iz JSON-a" "Natrag")
+odabranJson=false
 
 izborAzuriranja() {
     select izbor in Ime Lozinka; do
@@ -147,15 +148,11 @@ while true; do
                 echo "----------------"
                 select podopcija in "${opcijeVise[@]}"; do
                     case $podopcija in
-                    "Ispis računa")
-                        json="$1"
-                        cat $json | jq '.users[0]'
-                        break 3
-                        ;;
                     "Odabir JSON-a")
                         datoteka=$(zenity --file-selection --title="Odaberite .json datoteku" --file-filter="*.json" 2>/dev/null)
                         if [ $? -eq 0 ]; then
                             echo "JSON uspješno učitan!"
+                            odabranJson=true
                         else
                             echo "Greška. Ponovite"
                             exit
@@ -170,6 +167,7 @@ while true; do
                             prolaz=false
                         fi
                         if [ "$prolaz" = false ]; then
+                            odabranJson=false
                             echo "Neispravni JSON! Pokušajte ponovno."
                             echo "Primjer ispravnog formata:"
                             echo "{"
@@ -189,13 +187,50 @@ while true; do
                         fi
                         break
                         ;;
-                    "Ispis sadržaja JSON-a")
+                    "Kreiranje korisnika iz JSON-a")
+                        if [ "$odabranJson" = false ]; then
+                            echo "Morate prvo odabrati JSON!"
+                            break
+                        fi
                         while read -r username password; do
-                            #chpasswd je naredba za mijenjanje passworda
-                            echo "${username}, ${password}"
+                            useradd -m "${username}"
+                            if [ $? -eq 0 ]; then
+                                echo "Uspješno kreiran ${username}!"
+                            else
+                                echo "Greška. Pokušajte ponovno."
+                                exit
+                            fi
+                            echo "${username}:${password}" | sudo chpasswd
+                            if [ $? -eq 0 ]; then
+                                echo "Uspješno kreirana lozinka!"
+                            else
+                                echo "Greška. Pokušajte ponovno."
+                                exit
+                            fi
                         done < <(cat $datoteka | jq -r '.users[] | "\(.username) \(.password)"')
-                        echo $(cat $datoteka | jq -r '.users[] | "\(.username) \(.password)"')
                         break
+                        ;;
+                    "Brisanje korisnika iz JSON-a")
+                        if [ "$odabranJson" = false ]; then
+                            echo "Morate prvo odabrati JSON!"
+                            break
+                        fi
+                        zenity --question --text="Jeste li sigurni da želite izbrisati sve korisnike?"
+                        if [ $? -eq 0 ]; then
+                            while read -r username; do
+                                userdel -r "${username}"
+                                if [ $? -eq 0 ]; then
+                                    echo "Uspješno izbrisan ${username}!"
+                                else
+                                    echo "Greška. Ako dobijete error: 'user <oldname> is currently used by process <processno>' morate zaustaviti taj proces sa naredbom: kill <processno>."
+                                    echo "Ako želite izbrisati trenutno korištenog korisnika, morate se prijaviti na drugi račun te sa njega obrisati željeni račun."
+                                    exit
+                                fi
+                            done < <(cat $datoteka | jq -r '.users[] | "\(.username)"')
+                            break
+                        else
+                            break
+                        fi
                         ;;
                     "Natrag")
                         break 3
