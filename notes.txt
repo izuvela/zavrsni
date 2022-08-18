@@ -1,3 +1,1 @@
-1. koristiti usage() {}
-	- objasniti kako radi skripta ako dođe do errora
-	- napisati da se treba instalirati jq kao dependency
+napisati da se treba instalirati jq kao dependency
