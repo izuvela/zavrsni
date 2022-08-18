@@ -54,6 +54,7 @@ azuriranjeImena() {
     read new
     usermod -l "$new" "$name"
     usermod -d /home/"$new" -m "$new"
+    groupmod -n "$new" "$name"
     if [ $? -eq 0 ]; then
         echo "Uspješno ažurirano!"
     else
@@ -76,8 +77,8 @@ azuriranjeLozinke() {
     fi
 }
 
-opcijeJedan=("Pregled svih računa na računalu" "Kreiranje računa" "Ažuriranje računa" "Brisanje računa" "Kraj")
-opcijeVise=("Ispis računa" "Odabir JSON-a" "Ispis sadržaja JSON-a" "Kraj")
+opcijeJedan=("Pregled svih računa na računalu" "Kreiranje računa" "Ažuriranje računa" "Brisanje računa" "Natrag")
+opcijeVise=("Ispis računa" "Odabir JSON-a" "Ispis sadržaja JSON-a" "Natrag")
 
 izborAzuriranja() {
     select izbor in Ime Lozinka; do
@@ -115,7 +116,8 @@ while true; do
                     case $podopcija in
                     "Pregled svih računa na računalu")
                         sviRacuni
-                        break 3
+                        #break 3
+                        break
                         ;;
                     "Kreiranje računa")
                         kreiranjeKorisnika
@@ -129,8 +131,8 @@ while true; do
                         brisanjeKorisnika
                         break
                         ;;
-                    "Kraj")
-                        exit
+                    "Natrag")
+                        break 3
                         ;;
                     *)
                         echo "Kriva naredba! Ponovite"
@@ -181,20 +183,22 @@ while true; do
                             echo "}"
 
                         else
-                            korisnickiPodaci=$(cat $datoteka | jq '.users[]' | jq -r '.username, .password')
+                            korisnickiPodaci=$(cat $datoteka | jq '.users[]')
                             echo "Korisnički podaci:"
                             echo "$korisnickiPodaci"
                         fi
                         break
                         ;;
                     "Ispis sadržaja JSON-a")
-                        for user in "$usernames"; do
-                            echo $user
-                        done
+                        while read -r username password; do
+                            #chpasswd je naredba za mijenjanje passworda
+                            echo "${username}, ${password}"
+                        done < <(cat $datoteka | jq -r '.users[] | "\(.username) \(.password)"')
+                        echo $(cat $datoteka | jq -r '.users[] | "\(.username) \(.password)"')
                         break
                         ;;
-                    "Kraj")
-                        exit
+                    "Natrag")
+                        break 3
                         ;;
                     *)
                         echo "Kriva naredba! Ponovite"
@@ -205,7 +209,8 @@ while true; do
             done
             ;;
         Kraj)
-            break 2
+            #break 2
+            exit
             ;;
         *)
             echo "Kriva naredba! Ponovite"
