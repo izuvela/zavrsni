@@ -9,8 +9,50 @@ if (!(Test-Admin)) {
     exit
 }
 
+function sviRacuni {
+    echo "Names and descriptions"
+    Get-LocalUser | Format-Table -Property Name, Description -HideTableHeaders
+}
+
+function kreiranjeKorisnika {
+    $username = Read-Host -Prompt "Korisničko ime"
+    $password = Read-Host -Prompt "Lozinka" -AsSecureString
+    $description = Read-Host -Prompt "Opis"
+
+    if($description -eq ""){
+        #New-LocalUser -Name "$username" -Password $password | Format-Table -Property Name -HideTableHeaders
+        New-LocalUser -Name "$username" -Password $password | Out-Null
+
+        if($?){
+            echo "Korisnik $username kreiran bez opisa."
+        } else {
+            echo "Greška kod kreiranja korisnika."
+        }
+        Add-LocalGroupMember -Group "Administrators" -Member "$username"
+        if($?){
+            echo "Korisnik $username dodan kao admin."
+        } else {
+            echo "Greška kod dodavanja imena u grupu."
+        }
+    } else {
+        New-LocalUser -Name "$username" -Password $password -Description "$description" | Out-Null
+        if($?){
+            echo "Korisnik $username kreiran."
+        } else {
+            echo "Greška kod kreiranja korisnika."
+        }
+        Add-LocalGroupMember -Group "Administrators" -Member "$username"
+        if($?){
+            echo "Korisnik $username dodan kao admin."
+        } else {
+            echo "Greška kod dodavanja imena u grupu."
+        }
+    }
+}
+
 function prikaziGlavniMenu {
     clear
+    echo "Skripta za provođenje CRUD operacija nad jednim ili više korisničkih računa"
     echo "----------------"
     echo "1) Jedan"
     echo "2) Višestruko"
@@ -43,8 +85,12 @@ function jedanMenu {
     $opcija = Read-Host "Odaberi"
     switch($opcija){
         1 {
-            echo "ovo je 3"
-            
+            sviRacuni
+            break
+        }
+        2 {
+            kreiranjeKorisnika
+            break
         }
         
     }
