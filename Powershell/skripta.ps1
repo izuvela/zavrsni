@@ -51,6 +51,44 @@ function kreiranjeKorisnika {
     }
 }
 
+function azuriranjeImena {
+    echo "-----Ažuriranje imena-----"
+    $oldUsername = Read-Host -Prompt "Staro korisničko ime"
+    $newUsername = Read-Host -Prompt "Novo korisničko ime"
+    Rename-LocalUser -Name "$oldUsername" -NewName "$newUsername"
+    if($?){
+        echo "Korisnik $oldUsername je preimenovan u $newUsername."
+    } else {
+        echo "Greška kod ažuriranja. Pokušajte ponovno"
+    }
+}
+
+function azuriranjeLozinke {
+    echo "-----Ažuriranje lozinke-----"
+    $username = Read-Host "Korisničko ime"
+    $password = Read-Host -AsSecureString -Prompt "Nova lozinka"
+    Set-LocalUser -Name "$username" -Password $password
+    if($?){
+        echo "Korisniku $username je ažurirana lozinka."
+    } else {
+        echo "Greška kod ažuriranja. Pokušajte ponovno"
+    }
+    
+}
+
+function azuriranjeOpisa {
+    echo "-----Ažuriranje lozinke-----"
+    $username = Read-Host "Korisničko ime"
+    $description = Read-Host "Novi opis"
+    Set-LocalUser -Name "$username" -Description $description
+    if($?){
+        echo "Korisniku $username je ažuriran opis."
+    } else {
+        echo "Greška kod ažuriranja. Pokušajte ponovno"
+    }
+    
+}
+
 function brisanjeKorisnika {
     echo "-----Brisanje korisnika-----"
     $username = Read-Host -Prompt "Korisničko ime"
@@ -95,6 +133,37 @@ function prikaziVisestrukoMenu {
     echo "----------------"
 }
 
+function prikaziAzurirajMenu {
+    echo "-----Ažuriranje korisnika-----"    
+    echo "1) Ime"
+    echo "2) Lozinka"
+    echo "3) Opis"
+    echo "4) Natrag"
+    echo "----------------"
+}
+
+function azurirajMenu {
+    do{
+    prikaziAzurirajMenu
+    $opcija = Read-Host "Odaberi"
+    switch($opcija){
+        1 {
+            azuriranjeImena
+            break
+        }
+        2 {
+            azuriranjeLozinke
+            break
+        }
+        3 {
+            azuriranjeOpisa
+            break
+        }
+        
+    }
+	}while($opcija -notin 4)
+}
+
 function jedanMenu {
     do{
     prikaziJedanMenu
@@ -108,6 +177,9 @@ function jedanMenu {
             kreiranjeKorisnika
             break
         }
+        3 {
+            azurirajMenu
+        }
         4 {
             brisanjeKorisnika
             break
@@ -117,13 +189,15 @@ function jedanMenu {
 	}while($opcija -notin 5)
 }
 
+
+
 function visestrukoMenu {
     do{
     prikaziVisestrukoMenu
     $opcija = Read-Host "Odaberi"
     switch($opcija){
         1 {
-            echo "ovo je 4"
+            
             break
         }
         
