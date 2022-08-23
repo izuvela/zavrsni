@@ -20,15 +20,20 @@ function prikaziGlavniMenu {
 
 function prikaziJedanMenu {
     echo "----------------"
-    echo "1) Treće"
-    echo "2) Natrag"
+    echo "1) Pregled svih računa na računalu"
+    echo "2) Kreiranje računa"
+    echo "3) Ažuriranje računa"
+    echo "4) Brisanje računa"
+    echo "5) Natrag"
     echo "----------------"
 }
 
 function prikaziVisestrukoMenu {
     echo "----------------"
-    echo "1) Četvrto"
-    echo "2) Natrag"
+    echo "1) Odabir JSON-a"
+    echo "2) Kreiranje korisnika iz JSON-a"
+    echo "3) Brisanje korisnika iz JSON-a"
+    echo "4) Natrag"
     echo "----------------"
 }
 
@@ -43,7 +48,7 @@ function jedanMenu {
         }
         
     }
-	}while($opcija -notin 2)
+	}while($opcija -notin 5)
 }
 
 function visestrukoMenu {
@@ -57,8 +62,10 @@ function visestrukoMenu {
         }
         
     }
-	}while($opcija -notin 2)
+	}while($opcija -notin 4)
 }
+
+
 
 do{
     prikaziGlavniMenu
