@@ -15,6 +15,7 @@ function sviRacuni {
 }
 
 function kreiranjeKorisnika {
+    echo "-----Kreiranje korisnika-----"
     $username = Read-Host -Prompt "Korisničko ime"
     $password = Read-Host -Prompt "Lozinka" -AsSecureString
     $description = Read-Host -Prompt "Opis"
@@ -47,6 +48,21 @@ function kreiranjeKorisnika {
         } else {
             echo "Greška kod dodavanja imena u grupu."
         }
+    }
+}
+
+function brisanjeKorisnika {
+    echo "-----Brisanje korisnika-----"
+    $username = Read-Host -Prompt "Korisničko ime"
+    if($username -eq $env:USERNAME) {
+        echo "Ne možete izbrisati trenutno korištenog korisnika!"
+        break
+    }
+    Remove-LocalUser -Name "$username"
+    if($?){
+        echo "Korisnik $username je izbrisan."
+    } else {
+        echo "Greška kod brisanja. Pokušajte ponovno"
     }
 }
 
@@ -90,6 +106,10 @@ function jedanMenu {
         }
         2 {
             kreiranjeKorisnika
+            break
+        }
+        4 {
+            brisanjeKorisnika
             break
         }
         
