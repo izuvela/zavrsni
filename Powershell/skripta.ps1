@@ -150,7 +150,15 @@ function ispravnostJson {
  
 }
 
+function provjeraUcitanJson {
+    if(($Global:jsonData -eq "") -or ($Global:validJson -eq $false)) {
+        echo "JSON nije učitan!"
+        break
+    }
+}
+
 function kreiranjeJsonKorisnika {
+    provjeraUcitanJson
     echo "-----Kreiranje JSON korisnika-----"
     foreach ($user in $Global:jsonData.users) {
         $username = $user.username
@@ -167,6 +175,24 @@ function kreiranjeJsonKorisnika {
             echo "Korisnik $username dodan kao admin."
         } else {
             echo "Greška kod dodavanja imena u grupu."
+        }
+    }
+}
+
+function brisanjeJsonKorisnika {
+    provjeraUcitanJson
+    echo "-----Brisanje JSON korisnika-----"
+    foreach ($user in $Global:jsonData.users) {
+        $username = $user.username
+        if($username -eq $env:USERNAME) {
+            echo "Ne možete izbrisati trenutno korištenog korisnika!"
+            continue
+        }
+        Remove-LocalUser -Name "$username"
+        if($?){
+            echo "Korisnik $username je izbrisan."
+        } else {
+            echo "Greška kod brisanja. Pokušajte ponovno"
         }
     }
 }
@@ -270,6 +296,9 @@ function visestrukoMenu {
         2 {
             kreiranjeJsonKorisnika
             break
+        }
+        3 {
+            brisanjeJsonKorisnika
         }
         
     }
