@@ -77,7 +77,7 @@ function azuriranjeLozinke {
 }
 
 function azuriranjeOpisa {
-    echo "-----Ažuriranje lozinke-----"
+    echo "-----Ažuriranje opisa-----"
     $username = Read-Host "Korisničko ime"
     $description = Read-Host "Novi opis"
     Set-LocalUser -Name "$username" -Description $description
@@ -102,6 +102,55 @@ function brisanjeKorisnika {
     } else {
         echo "Greška kod brisanja. Pokušajte ponovno"
     }
+}
+
+function Get-FileName($initialDirectory)
+{
+    [System.Reflection.Assembly]::LoadWithPartialName("System.windows.forms") | Out-Null
+    
+    $OpenFileDialog = New-Object System.Windows.Forms.OpenFileDialog
+    $OpenFileDialog.initialDirectory = $initialDirectory
+    $OpenFileDialog.filter = "JSON (*.json)| *.json"
+    $OpenFileDialog.ShowDialog() | Out-Null
+    $OpenFileDialog.FileName
+}
+
+#Globalne varijable
+$jsonFile = "\."
+$validJson = $false
+
+function ispravnostJson {
+    try {
+        $jsonData = Get-Content -Path $Global:jsonFile -Raw | ConvertFrom-Json -ErrorAction Stop
+        #$jsonData.users.username[0] | Format-Table -HideTableHeaders
+        $users = $jsonData.users | Format-Table -HideTableHeaders
+        if ($users) {
+            $Global:validJson = $true
+        } 
+    } catch {
+        $Global:validJson = $false
+    }
+    
+    if ($Global:validJson) {
+        Write-Host "JSON uspješno učitan!";
+    } else {
+       echo "Neispravni JSON! Pokušajte ponovno."
+       echo "Primjer ispravnog formata:"
+       echo "{"
+       echo "  'users': ["
+       echo "      {"
+       echo "         'username': '...',"
+       echo "         'password': '...'"
+       echo "      },"
+       echo "        ..."
+       echo "   ]"
+       echo "}"
+    }
+ 
+}
+
+function kreiranjeJsonKorisnika {
+    
 }
 
 function prikaziGlavniMenu {
@@ -197,8 +246,10 @@ function visestrukoMenu {
     $opcija = Read-Host "Odaberi"
     switch($opcija){
         1 {
-            
-            break
+            $Global:jsonFile = Get-FileName ".\"
+            ispravnostJson
+        }
+        2 {
         }
         
     }
