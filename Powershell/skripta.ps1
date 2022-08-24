@@ -116,14 +116,15 @@ function Get-FileName($initialDirectory)
 }
 
 #Globalne varijable
-$jsonFile = "\."
+$jsonFile = ""
+$jsonData = "";
 $validJson = $false
 
 function ispravnostJson {
     try {
-        $jsonData = Get-Content -Path $Global:jsonFile -Raw | ConvertFrom-Json -ErrorAction Stop
+        $Global:jsonData = Get-Content -Path $Global:jsonFile -Raw | ConvertFrom-Json -ErrorAction Stop
         #$jsonData.users.username[0] | Format-Table -HideTableHeaders
-        $users = $jsonData.users | Format-Table -HideTableHeaders
+        $users = $Global:jsonData.users | Format-Table -HideTableHeaders
         if ($users) {
             $Global:validJson = $true
         } 
@@ -150,7 +151,24 @@ function ispravnostJson {
 }
 
 function kreiranjeJsonKorisnika {
-    
+    echo "-----Kreiranje JSON korisnika-----"
+    foreach ($user in $Global:jsonData.users) {
+        $username = $user.username
+        $password = ConvertTo-SecureString "$($user.password)" -AsPlainText -Force
+
+        New-LocalUser -Name "$username" -Password $password | Out-Null
+        if($?){
+            echo "Korisnik $username kreiran."
+        } else {
+            echo "Greška kod kreiranja korisnika."
+        }
+        Add-LocalGroupMember -Group "Administrators" -Member "$username"
+        if($?){
+            echo "Korisnik $username dodan kao admin."
+        } else {
+            echo "Greška kod dodavanja imena u grupu."
+        }
+    }
 }
 
 function prikaziGlavniMenu {
@@ -250,6 +268,8 @@ function visestrukoMenu {
             ispravnostJson
         }
         2 {
+            kreiranjeJsonKorisnika
+            break
         }
         
     }
