@@ -116,9 +116,9 @@ function Get-FileName($initialDirectory)
 }
 
 #Globalne varijable
-$jsonFile = ""
-$jsonData = "";
-$validJson = $false
+$global:jsonFile = ""
+$global:jsonData = "";
+$global:validJson = $false
 
 function ispravnostJson {
     try {
@@ -254,7 +254,7 @@ function azurirajMenu {
         }
         
     }
-	}while($opcija -notin 4)
+	}while($opcija -ne 4)
 }
 
 function jedanMenu {
@@ -279,7 +279,7 @@ function jedanMenu {
         }
         
     }
-	}while($opcija -notin 5)
+	}while($opcija -ne 5)
 }
 
 
@@ -302,7 +302,7 @@ function visestrukoMenu {
         }
         
     }
-	}while($opcija -notin 4)
+	}while($opcija -ne 4)
 }
 
 
@@ -319,7 +319,7 @@ do{
         }
 
     }
-}while($opcija -notin 3)
+}while($opcija -ne 3)
 
 
 
